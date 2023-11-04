@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Hash Table Visualization Tool</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        #container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            text-align: center;
+        }
+
+        #hash-table {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .bucket {
+            width: 40px;
+            height: 40px;
+            background-color: #007bff;
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 5px;
+            border-radius: 5px;
+        }
+
+        #input {
+            width: 100px;
+            margin: 10px;
+        }
+
+        button {
+            margin: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <h1>Hash Table Visualization Tool</h1>
+        <input type="text" id="input" placeholder="Key">
+        <button onclick="insert()">Insert</button>
+        <button onclick="lookup()">Lookup</button>
+        <button onclick="remove()">Remove</button>
+        <button onclick="clearHashTable()">Clear Hash Table</button>
+        <div id="hash-table"></div>
+    </div>
+
+    <script>
+        const hashTable = {};
+
+        function insert() {
+            const key = document.getElementById("input").value;
+            if (key.trim() !== "") {
+                const hash = hashCode(key);
+                if (!hashTable[hash]) {
+                    hashTable[hash] = [];
+                }
+                hashTable[hash].push(key);
+                renderHashTable();
+                document.getElementById("input").value = "";
+            }
+        }
+
+        function lookup() {
+            const key = document.getElementById("input").value;
+            if (key.trim() !== "") {
+                const hash = hashCode(key);
+                const bucket = hashTable[hash];
+                if (bucket && bucket.includes(key)) {
+                    alert(`Key '${key}' found in hash table.`);
+                } else {
+                    alert(`Key '${key}' not found in hash table.`);
+                }
+                document.getElementById("input").value = "";
+            }
+        }
+
+        function remove() {
+            const key = document.getElementById("input").value;
+            if (key.trim() !== "") {
+                const hash = hashCode(key);
+                const bucket = hashTable[hash];
+                if (bucket) {
+                    const index = bucket.indexOf(key);
+                    if (index !== -1) {
+                        bucket.splice(index, 1);
+                    }
+                }
+                renderHashTable();
+                document.getElementById("input").value = "";
+            }
+        }
+
+        function clearHashTable() {
+            for (const key in hashTable) {
+                if (hashTable.hasOwnProperty(key)) {
+                    delete hashTable[key];
+                }
+            }
+            renderHashTable();
+        }
+
+        function renderHashTable() {
+            const hashTableContainer = document.getElementById("hash-table");
+            hashTableContainer.innerHTML = "";
+            for (const key in hashTable) {
+                if (hashTable.hasOwnProperty(key)) {
+                    const bucket = hashTable[key];
+                    const bucketElement = document.createElement("div");
+                    bucketElement.classList.add("bucket");
+                    bucketElement.innerText = bucket.join(", ");
+                    hashTableContainer.appendChild(bucketElement);
+                }
+            }
+        }
+
+        function hashCode(s) {
+            return s.split('').reduce(function (a, b) {
+                a = ((a << 5) - a) + b.charCodeAt(0);
+                return a & a;
+            }, 0);
+        }
+    </script>
+</body>
+</html>
